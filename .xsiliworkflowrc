@@ -1,0 +1,28 @@
+{
+    "env": {
+        "test": {
+            "ftp": {
+                "host": "",
+                "port": 22,
+                "user":"",
+                "pass":"",
+                "remotePath": ""
+            },
+            "domain":""
+        },
+        "dist": {
+            "ftp":{
+                "host": "",
+                "port": 22,
+                "user":"",
+                "pass":"",
+                "remotePath": ""
+            },
+            "domain": ""
+        }
+    },
+    "projectName": "",
+    "entryFile": "index.html",
+    "openEntryFile": true,
+    "port": 3001
+}

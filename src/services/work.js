@@ -87,14 +87,14 @@ export function saveMonthTemplate(params, data) {
 export function addWorkPageName(params, data) {
   return AppService.postRequest('/customUser/addWorkPageName', params, data)
 }
-export function addWorkPage(params, data) {
-  return AppService.postRequest('/customUser/addWorkPage', params, data)
+export async function addWorkPage(params, data) {
+  return await AppService.postRequest('/customUser/addWorkPage', params, data)
 }
 export function getWorkTemplatePageName(params, data) {
   return AppService.postRequest('/customUser/getWorkTemplatePageName', params, data)
 }
-export function getWorkTemplate(params, data) {
-  return AppService.postRequest('/customUser/getWorkTemplate', params, data)
+export function getWorkTemplatePage(params, data) {
+  return AppService.postRequest('/customUser/getWorkTemplatePage', params, data)
 }
 
 export function findAllTpl(params, data) {

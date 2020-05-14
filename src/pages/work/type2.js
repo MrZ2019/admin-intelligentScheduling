@@ -787,7 +787,7 @@ class List extends React.Component {
 
 
   componentDidMount() {
-    this.getMonthData();
+    this.getMonthData(null, true);
 
     this.getDepartment();
     this.getTplList();
@@ -958,7 +958,7 @@ class List extends React.Component {
           <FormItem>
             <a onClick={() => this.deleteRow(record.id)} className="btn-delete">删除</a>
             <a onClick={() => this.saveModal(record.id)} className="btn-save" style={{display: 'none'}}>保存</a>
-            <a onClick={() => this.queryModal(record.id, startDate)}>查询</a>
+            <a onClick={() => this.queryModal(record.id, startDate)} style={{display: 'none'}}>查询</a>
           </FormItem>
         )
       },
@@ -1269,36 +1269,45 @@ class List extends React.Component {
 
     let name = record.tplname;
 
-
+    // list = list || [];
     //let api = isMonth ? 'saveMonthTemplate' : 'saveTemplate'
     let api = 'addWorkPageName';
     WorkAction[api]({
       name: name,
       // data: JSON.stringify(list2),
-    }, {}).then((id)=> {
+    }, {}).then(async (id)=> {
       let api = 'addWorkPage';
 
-      let shifts = JSON.parse(JSON.stringify(list[rowIndex].shifts));
-      let list2 = [];
+      for (var i = 0; i < list.length; i++) {
+        let shifts = JSON.parse(JSON.stringify(list[i].shifts));
+        let list2 = [];
 
-      for(let k in shifts) {
-        shifts[k].shiftName = encodeURIComponent(shifts[k].shiftName)
-        list2.push(shifts[k]);
-      }
+        for(let k in shifts) {
+          let index = moment(k).weekday();
+          shifts[k].shiftName = encodeURIComponent(shifts[k].shiftName)
+          // list2.push(shifts[k]);
+          list2[index] = shifts[k]
+        }
 
-      WorkAction[api]({
-        monday: list2[0],
-        tuesday: list2[1],
-        wednesday: list2[2],
-        maxId: id,
-      }).then(() => {
-        this.setState({
-          list,
-          saveModalVisible: false,
-        }, () => {
-          console.log('=============',this.state.list);
+        await WorkAction[api]({
+          monday: JSON.stringify(list2[0]) || ' ',
+          tuesday:  JSON.stringify(list2[1]) || ' ',
+          wednesday:  JSON.stringify(list2[2]) || ' ',
+          thursday:  JSON.stringify(list2[3]) || ' ',
+          friday:  JSON.stringify(list2[4]) || ' ',
+          saturday:  JSON.stringify(list2[5]) || ' ',
+          sunday:  JSON.stringify(list2[6]) || ' ',
+          maxId: id,
+        }).then(() => {
         })
+      }
+      this.setState({
+        list,
+        saveModalVisible: false,
+      }, () => {
+        console.log('=============',this.state.list);
       })
+
     })
 
   };
@@ -1307,38 +1316,78 @@ class List extends React.Component {
     const { getFieldValue } = this.props.form;
 
 
-    // let name = record.tplname;
-    //
-    //
-    // let shifts = list[rowIndex].shifts;
-    // let list2 = [];
-    //
-    // for(let k in shifts) {
-    //   list2.push(shifts[k]);
-    // }
 
-    // let list2 = [{"id":0,"shifts":{"2020-03-01":{"dateString":"2020-03-01","workTimeType":1,"shiftsId":2,"startInjoureingTime":1,"endInjoureingTime":2,"shiftName":"中班1234"}}}]
-    // console.log(this.state.startDate)
-    // let keys = Object.keys(list[index].shifts);
-
-    // for (var i = 0; i < record.length; i++) {
-    //   let obj = record[i];
-    //
-    //   let offset = moment(obj.dateString)[this.state.isMonth ? 'date' : 'weekday']();
-    //
-    //   if (!this.state.isMonth) {
-    //     offset += 1;
-    //   }
-    //   offset -=1
-    //   let startDate = moment(list[index].startDate)
-    //   let str = startDate.add(offset, 'day').format('YYYY-MM-DD')
-    //   list[index].shifts[str] = obj;
-    // }
     console.log(rowIndex)
-    let api = 'getWorkTemplate'
+    let api = 'getWorkTemplatePage'
     WorkAction[api]({
       id: record.id,
     }).then((res) => {
+
+      // let name = record.tplname;
+
+
+      // let shifts = list[rowIndex].shifts;
+      // let list2 = [];
+      //
+      // for(let k in shifts) {
+      //   list2.push(shifts[k]);
+      // }
+
+      // let list2 = [{"id":0,"shifts":{"2020-03-01":{"dateString":"2020-03-01","workTimeType":1,"shiftsId":2,"startInjoureingTime":1,"endInjoureingTime":2,"shiftName":"中班1234"}}}]
+      console.log(this.state.startDate)
+      console.log(list[0].startDate)
+
+      for (var i = 0; i < res.length && i < list.length; i++) {
+        var record = res[i]
+        let startDate = moment(list[i].startDate)
+        let str
+        if (record.monday.trim()) {
+
+
+          str = startDate.add(0, 'day').format('YYYY-MM-DD')
+          list[i].shifts[str] = JSON.parse(record.monday);
+          list[i].shifts[str].shiftName = decodeURIComponent(list[i].shifts[str].shiftName)
+        }
+
+        if (record.tuesday.trim()) {
+          str = startDate.add(1, 'day').format('YYYY-MM-DD')
+          list[i].shifts[str] = JSON.parse(record.tuesday);
+          list[i].shifts[str].shiftName = decodeURIComponent(list[i].shifts[str].shiftName)
+        }
+
+        if (record.wednesday.trim()) {
+          str = startDate.add(2, 'day').format('YYYY-MM-DD')
+          list[i].shifts[str] = JSON.parse(record.wednesday);
+          list[i].shifts[str].shiftName = decodeURIComponent(list[i].shifts[str].shiftName)
+        }
+
+        if (record.thursday.trim()) {
+          str = startDate.add(3, 'day').format('YYYY-MM-DD')
+          list[i].shifts[str] = JSON.parse(record.thursday);
+          list[i].shifts[str].shiftName = decodeURIComponent(list[i].shifts[str].shiftName)
+        }
+
+        if (record.friday.trim()) {
+          str = startDate.add(4, 'day').format('YYYY-MM-DD')
+          list[i].shifts[str] = JSON.parse(record.friday);
+          list[i].shifts[str].shiftName = decodeURIComponent(list[i].shifts[str].shiftName)
+        }
+
+        if (record.saturday.trim()) {
+          str = startDate.add(5, 'day').format('YYYY-MM-DD')
+          list[i].shifts[str] = JSON.parse(record.saturday);
+          list[i].shifts[str].shiftName = decodeURIComponent(list[i].shifts[str].shiftName)
+        }
+
+        if (record.sunday.trim()) {
+          str = startDate.add(6, 'day').format('YYYY-MM-DD')
+          list[i].shifts[str] = JSON.parse(record.sunday);
+          list[i].shifts[str].shiftName = decodeURIComponent(list[i].shifts[str].shiftName)
+        }
+
+
+      }
+
       this.setState({
         list: list,
         tplQueryModalVisible: false,
@@ -1439,8 +1488,9 @@ class List extends React.Component {
           />
         </Row>
         <Row gutter={24} style={{marginTop: 12}}>
-          <Button type="primary" htmlType="submit" style={{marginRight: 32}} onClick={() => this.saveModal()}>保存为模板</Button>
-          <Button type="primary" htmlType="submit" onClick={() => this.queryModal()}>填充</Button>
+          <Button type="primary" htmlType="submit" style={{marginRight: 32}} onClick={() => this.saveModal()}>保存排班</Button>
+          <Button type="primary"  style={{marginRight: 32}} onClick={() => this.saveModal()}>保存为模板</Button>
+          <Button type="primary"  onClick={() => this.queryModal()}>填充</Button>
         </Row>
       </Form>
     );

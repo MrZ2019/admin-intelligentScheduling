@@ -6,7 +6,7 @@ import axios from 'axios'
 import Qs from 'qs'
 import queryString from 'query-string';
 import { notification, message } from 'antd';
-
+import regeneratorRuntime from './runtime.js'
 var localConfig = {
   isMock : true,
   isDev: true,
@@ -68,9 +68,9 @@ instance.interceptors.response.use(
       return
     }
     sessionStorage.removeItem('gotoBeforeUrl')
-    if(response.data.errorCode !== 0) {
-      message.error(response.data.msg);
-    }
+    // if(response.data.errorCode !== 0) {
+    //   message.error(response.data.msg);
+    // }
     return response.data
   },error => {
     notification['error']({
@@ -87,13 +87,13 @@ const AppService = {
     // return instance.get(url,data ?　{params: data}: {})
     return instance.get(url, {params})
   },
-  postRequest: (url, params = {}, data) => {
+  postRequest: async (url, params = {}, data) => {
     // 将请求参数转换成params
     if(params) {
       url = url + '?' + queryString.stringify(params)
     }
     // data = data ?  queryString.stringify(data) : null
-    return instance.post(url, data)
+    return await instance.post(url, data)
   },
   putRequest: (url, params = {}, data = {}) => {
     url = url + '?' + queryString.stringify(params)

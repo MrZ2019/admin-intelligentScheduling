@@ -62,7 +62,7 @@
     "jsx-loader": "^0.13.2",
     "less-loader": "^4.0.3",
     "lodash": "^4.17.4",
-    "node-sass": "^4.11.0",
+    "node-sass": "^7.0.0",
     "postcss-loader": "^2.0.5",
     "query-string": "^5.0.0",
     "rc": "^1.2.1",
